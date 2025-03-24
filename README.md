@@ -2,7 +2,7 @@
 
 An interactive weather and traffic monitoring dashboard for Nairobi and surrounding areas, featuring real-time weather updates, traffic conditions, and community-driven updates through Twitter integration.
 
-![Dashboard Preview](./demo/dashboard.gif)
+> 🌐 **[Live Dashboard Preview](http://127.0.0.1:5000)** - Access the live dashboard locally after installation
 
 ## Features
 
@@ -37,17 +37,6 @@ An interactive weather and traffic monitoring dashboard for Nairobi and surround
 - Machakos
 - Kiambu
 - Ongata Rongai
-
-## Demo
-
-### Dashboard Overview
-![Dashboard Overview](./demo/overview.png)
-
-### Traffic Updates
-![Traffic Updates](./demo/traffic.png)
-
-### Weather Details
-![Weather Details](./demo/weather.png)
 
 ## Installation
 
