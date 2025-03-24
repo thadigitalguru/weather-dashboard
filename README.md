@@ -99,13 +99,32 @@ python app.py
 4. Add them to your `.env` file
 
 ## Tech Stack
-- Backend: Python Flask
-- Frontend: HTML, CSS, JavaScript
-- APIs: OpenWeatherMap, Twitter
-- Data Storage: Environment variables
-- Real-time Updates: AJAX
+
+- **Frontend**:
+  - HTML5, CSS3, JavaScript
+  - Bootstrap 5.3
+  - Chart.js for data visualization
+  - Font Awesome icons
+  - Custom CSS animations
+
+- **Backend**:
+  - Python 3.11
+  - Flask web framework
+  - Flask-SQLAlchemy
+  - Python-dotenv for environment variables
+
+- **APIs & Services**:
+  - OpenWeatherMap API
+  - Twitter API v2
+  - Custom traffic simulation service
+
+- **Development Tools**:
+  - Git for version control
+  - Visual Studio Code
+  - Python virtual environment
 
 ## Contributing
+
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
@@ -113,10 +132,12 @@ python app.py
 5. Open a Pull Request
 
 ## License
+
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
+
 - OpenWeatherMap for weather data
-- Twitter for social integration
-- Flask community for the excellent framework
-- Contributors and users of the dashboard
+- Twitter for community updates integration
+- Bootstrap team for the UI framework
+- All contributors and users of this dashboard
