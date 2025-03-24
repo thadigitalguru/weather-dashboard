@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nairobi Weather & Traffic</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --primary-black: #1a1a1a;
+            --accent-red: #ff4d4d;
+            --accent-green: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-black), var(--primary-red));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            background: rgba(26, 26, 26, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(220, 53, 69, 0.2);
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid var(--primary-red);
+        }
+
+        h1 {
+            color: var(--primary-red);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .location-btn {
+            padding: 12px;
+            background: transparent;
+            border: 2px solid var(--primary-red);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .location-btn:hover, .location-btn.active {
+            background: var(--primary-red);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .weather-info {
+            display: none;
+            text-align: center;
+        }
+
+        .weather-main {
+            background: rgba(220, 53, 69, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            border: 1px solid var(--primary-red);
+        }
+
+        .temperature {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #fff;
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(220, 53, 69, 0.3);
+        }
+
+        .description {
+            font-size: 1.5rem;
+            color: var(--accent-red);
+            margin-bottom: 1rem;
+            text-transform: capitalize;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .detail-item {
+            background: rgba(26, 26, 26, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            transition: transform 0.3s;
+            border: 1px solid var(--primary-red);
+        }
+
+        .detail-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+        }
+
+        .detail-item i {
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .traffic-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 10px;
+            border: 1px solid var(--primary-red);
+        }
+
+        .traffic-title {
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .road-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .road-status:hover {
+            transform: translateX(5px);
+        }
+
+        .traffic-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .traffic-light.light { background-color: var(--accent-green); }
+        .traffic-light.moderate { background-color: #ffc107; }
+        .traffic-light.heavy { background-color: var(--primary-red); }
+
+        .score-section {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 10px;
+            border: 1px solid var(--primary-red);
+        }
+
+        .score-title {
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .score-message {
+            margin-top: 0.5rem;
+            color: var(--accent-red);
+        }
+
+        .error-message {
+            display: none;
+            color: var(--primary-red);
+            text-align: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 8px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+            color: var(--primary-red);
+        }
+
+        .social-updates {
+            margin-top: 2rem;
+        }
+
+        .social-title {
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+        }
+
+        .tweet-container {
+            padding: 1rem;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 10px;
+            border: 1px solid var(--primary-red);
+        }
+
+        .post-update {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 10px;
+            border: 1px solid var(--primary-red);
+        }
+
+        .post-btn {
+            background: var(--primary-red);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .temperature {
+                font-size: 3rem;
+            }
+
+            .description {
+                font-size: 1.2rem;
+            }
+
+            .location-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nairobi Weather & Traffic</h1>
+        
+        <div class="location-grid">
+            {% for key, location in locations.items() %}
+            <button class="location-btn" onclick="getWeather('{{ key }}')">{{ location.name }}</button>
+            {% endfor %}
+        </div>
+
+        <div class="loading">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+        </div>
+
+        <div class="error-message"></div>
+
+        <div class="weather-info">
+            <div class="weather-main">
+                <div class="temperature">
+                    <span id="temp"></span>°C
+                </div>
+                <div class="description" id="description"></div>
+                <div id="location" style="font-size: 1.2rem; color: #fff;"></div>
+            </div>
+
+            <div class="details">
+                <div class="detail-item">
+                    <i class="fas fa-temperature-high"></i>
+                    <p>Feels Like</p>
+                    <p><span id="feels-like"></span>°C</p>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-wind"></i>
+                    <p>Wind Speed</p>
+                    <p><span id="wind-speed"></span> km/h</p>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-tint"></i>
+                    <p>Humidity</p>
+                    <p><span id="humidity"></span>%</p>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-compress-arrows-alt"></i>
+                    <p>Pressure</p>
+                    <p><span id="pressure"></span> hPa</p>
+                </div>
+            </div>
+
+            <div class="traffic-section">
+                <h2 class="traffic-title">Traffic Status</h2>
+                <div id="roads-container"></div>
+                
+                <div class="social-updates">
+                    <h3 class="social-title">Community Updates</h3>
+                    <div class="tweet-container" id="tweet-container">
+                        <!-- Tweets will be loaded here -->
+                    </div>
+                    
+                    <div class="post-update">
+                        <textarea id="update-message" placeholder="Share a traffic or weather update..." maxlength="280"></textarea>
+                        <button onclick="postUpdate()" class="post-btn">
+                            <i class="fab fa-twitter"></i> Post Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="score-section">
+                <h3 class="score-title">Traffic Navigation Score</h3>
+                <div class="score-value" id="traffic-score">0</div>
+                <div class="score-message" id="score-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set Nairobi as default when page loads
+        window.onload = function() {
+            getWeather('nairobi');
+        };
+
+        function getTrafficColor(status) {
+            return status === 'light' ? '#28a745' : 
+                   status === 'moderate' ? '#ffc107' : '#dc3545';
+        }
+
+        function getScoreMessage(score) {
+            if (score >= 80) return "Expert Navigator! You've picked the best routes!";
+            if (score >= 60) return "Good timing! Traffic is manageable.";
+            if (score >= 40) return "Moderate conditions. Plan your route carefully.";
+            return "Heavy traffic alert! Consider alternative routes.";
+        }
+
+        function getWeather(location) {
+            // Update active button
+            document.querySelectorAll('.location-btn').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(location)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Show loading, hide other elements
+            document.querySelector('.loading').style.display = 'block';
+            document.querySelector('.weather-info').style.display = 'none';
+            document.querySelector('.error-message').style.display = 'none';
+
+            fetch(`/weather?location=${encodeURIComponent(location)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Update weather data
+                    document.getElementById('temp').textContent = data.temperature;
+                    document.getElementById('description').textContent = data.description;
+                    document.getElementById('location').textContent = data.city;
+                    document.getElementById('feels-like').textContent = data.feels_like;
+                    document.getElementById('wind-speed').textContent = data.wind_speed;
+                    document.getElementById('humidity').textContent = data.humidity;
+                    document.getElementById('pressure').textContent = data.pressure;
+
+                    // Update traffic information
+                    const roadsContainer = document.getElementById('roads-container');
+                    roadsContainer.innerHTML = '';
+                    data.roads.forEach(road => {
+                        const roadElement = document.createElement('div');
+                        roadElement.className = 'road-status';
+                        roadElement.innerHTML = `
+                            <span>${road.name}</span>
+                            <div style="display: flex; align-items: center;">
+                                <span style="margin-right: 10px;">${road.status.toUpperCase()}</span>
+                                <span class="traffic-light ${road.status}"></span>
+                            </div>
+                        `;
+                        roadsContainer.appendChild(roadElement);
+                    });
+
+                    // Update traffic score
+                    document.getElementById('traffic-score').textContent = data.traffic_score;
+                    document.getElementById('score-message').textContent = getScoreMessage(data.traffic_score);
+
+                    // Show weather info
+                    document.querySelector('.weather-info').style.display = 'block';
+                })
+                .catch(error => {
+                    // Show error message
+                    document.querySelector('.error-message').textContent = error.message;
+                    document.querySelector('.error-message').style.display = 'block';
+                })
+                .finally(() => {
+                    // Hide loading
+                    document.querySelector('.loading').style.display = 'none';
+                });
+        }
+
+        function postUpdate() {
+            const updateMessage = document.getElementById('update-message').value;
+            if (updateMessage.trim() === '') return;
+
+            // Post update to server
+            fetch('/post-update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: updateMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Clear update message
+                document.getElementById('update-message').value = '';
+
+                // Add update to tweet container
+                const tweetContainer = document.getElementById('tweet-container');
+                const tweetElement = document.createElement('div');
+                tweetElement.className = 'tweet';
+                tweetElement.innerHTML = `
+                    <p>${updateMessage}</p>
+                    <small>Posted by you</small>
+                `;
+                tweetContainer.appendChild(tweetElement);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+    </script>
+</body>
+</html>
